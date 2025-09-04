@@ -1,5 +1,5 @@
 #[starknet::interface]
-trait ICounter<T> {
+pub trait ICounter<T> {
     fn get_counter(self: @T) -> u32;
     fn increase_counter(ref self: T);
     fn decrease_counter(ref self: T);
@@ -8,7 +8,7 @@ trait ICounter<T> {
 }
 
 #[starknet::contract]
-mod CounterContract {
+pub mod CounterContract {
     use super::ICounter;
     use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
     use starknet::{ContractAddress, get_caller_address, get_contract_address};
@@ -33,23 +33,23 @@ mod CounterContract {
 
     #[event]
     #[derive(Drop, starknet::Event)]
-    enum Event {
+    pub enum Event {
         CounterChange: CounterChanged,
         #[flat]
         OwnableEvent: OwnableComponent::Event,
     }
 
     #[derive(Drop, starknet::Event)]
-    struct CounterChanged {
+    pub struct CounterChanged {
         #[key]
-        caller: ContractAddress,
-        old_value: u32,
-        new_value: u32,
-        reason: ChangeReason,
+        pub caller: ContractAddress,
+        pub old_value: u32,
+        pub new_value: u32,
+        pub reason: ChangeReason,
     }
     
     #[derive(Drop, Copy, Serde)]
-    enum ChangeReason {
+    pub enum ChangeReason {
         Increased,
         Decreased,
         Reset,
@@ -109,8 +109,20 @@ mod CounterContract {
                 contract_address: self.payment_token.read(),
             };
 
+            let caller = get_caller_address();
+            let this_contract = get_contract_address();
+
+            let balance_before = token.balance_of(this_contract);
+            
+            assert!(token.balance_of(caller) >= PAYMENT_AMOUNT, "Caller does not have enough balance");
+
+            assert!(token.allowance(caller, this_contract) >= PAYMENT_AMOUNT, "Caller does not have enough allowance");
+
             // automatically revert if the transfer fails
-            token.transfer_from(get_caller_address(), get_contract_address(), PAYMENT_AMOUNT);
+            assert!(token.transfer_from(caller, this_contract, PAYMENT_AMOUNT), "Transfer failed");
+
+            let balance_after = token.balance_of(this_contract);
+            assert!(balance_after > balance_before, "Transfer failed");
 
             self.counter.write(0);
 
