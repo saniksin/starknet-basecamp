@@ -61,7 +61,7 @@ fn test_increment_counter() {
     };
 
     spy.assert_emitted(@array![
-        (dispatcher.contract_address, Event::CounterChange(expected_event))
+        (dispatcher.contract_address, Event::CounterChanged(expected_event))
     ]);
 }
 
@@ -87,7 +87,7 @@ fn test_decrement_counter() {
     };
 
     spy.assert_emitted(@array![
-        (dispatcher.contract_address, Event::CounterChange(expected_event))
+        (dispatcher.contract_address, Event::CounterChanged(expected_event))
     ]);
 }
 
@@ -110,7 +110,7 @@ fn test_set_counter_owner() {
     dispatcher.set_counter(new_value);
     stop_cheat_caller_address(contract_address);
 
-    assert!(dispatcher.get_counter() == new_value, "The owner is unable to reset the counter");
+    assert!(dispatcher.get_counter() == new_value, "The owner is unable н the counter");
 
     let expected_event = CounterChanged {
         caller: user_owner(),
@@ -120,7 +120,7 @@ fn test_set_counter_owner() {
     };
 
     spy.assert_emitted(@array![
-        (dispatcher.contract_address, Event::CounterChange(expected_event))
+        (dispatcher.contract_address, Event::CounterChanged(expected_event))
     ]);
 }
 
@@ -202,7 +202,7 @@ fn test_reset_counter_good() {
     };
 
     spy.assert_emitted(@array![
-        (dispatcher.contract_address, Event::CounterChange(expected_event))
+        (dispatcher.contract_address, Event::CounterChanged(expected_event))
     ]);
 
     assert!(strk_dispatcher.balance_of(user_owner()) == 1000000000000000000, "The owner balance should be 1");

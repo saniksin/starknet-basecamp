@@ -107,6 +107,27 @@ export const useScaffoldEventHistory = <
   const eventAbi = matchingAbiEvents?.[0];
   const fullName = eventAbi?.name;
 
+  // Try to find an enum event variant that wraps this struct event (common in Cairo v2)
+  // Example: enum Event { CounterChange: CounterChanged }
+  const variantNameForStructEvent = useMemo(() => {
+    try {
+      const abi = deployedContractData?.abi as any;
+      if (!abi || !eventAbi?.name) return undefined;
+      const enumEvents = abi.filter(
+        (part: any) => part.type === "event" && part.kind === "enum",
+      );
+      for (const enumEvent of enumEvents) {
+        const match = (enumEvent.variants || []).find(
+          (v: any) => v?.type === eventAbi.name,
+        );
+        if (match?.name) return match.name as string; // e.g., "CounterChange"
+      }
+    } catch (_) {
+      // noop: fallback to struct event name only
+    }
+    return undefined;
+  }, [deployedContractData, eventAbi?.name]);
+
   const readEvents = async (fromBlock?: bigint) => {
     if (!enabled) {
       setIsLoading(false);
@@ -136,7 +157,16 @@ export const useScaffoldEventHistory = <
         (fromBlock && blockNumber >= fromBlock) ||
         blockNumber >= fromBlockUpdated
       ) {
-        let keys: string[][] = [[hash.getSelectorFromName(eventName)]];
+        // Build selector keys. Some contracts emit the enum variant name as the key.
+        const firstKeyCandidates: string[] = [
+          hash.getSelectorFromName(eventName),
+        ];
+        if (variantNameForStructEvent) {
+          firstKeyCandidates.push(
+            hash.getSelectorFromName(variantNameForStructEvent),
+          );
+        }
+        let keys: string[][] = [firstKeyCandidates];
         if (filters) {
           keys = keys.concat(
             composeEventFilterKeys(filters, event, deployedContractData.abi),

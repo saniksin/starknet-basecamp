@@ -7,16 +7,16 @@ const deployedContracts = {
   devnet: {
     CounterContract: {
       address:
-        "0x38708d1fba574cad59d091ee81dc12f743d0461540665b057e9d8f654075cc4",
+        "0x29a1feaa340e43b22843d43b0a46429b0bf197a4649d5ef7ed428952a5825c",
       abi: [
         {
           type: "impl",
           name: "CounterImpl",
-          interface_name: "contracts::YourContract::ICounter",
+          interface_name: "contracts::counter::ICounter",
         },
         {
           type: "interface",
-          name: "contracts::YourContract::ICounter",
+          name: "contracts::counter::ICounter",
           items: [
             {
               type: "function",
@@ -125,7 +125,7 @@ const deployedContracts = {
         },
         {
           type: "enum",
-          name: "contracts::YourContract::CounterContract::ChangeReason",
+          name: "contracts::counter::CounterContract::ChangeReason",
           variants: [
             {
               name: "Increased",
@@ -147,7 +147,7 @@ const deployedContracts = {
         },
         {
           type: "event",
-          name: "contracts::YourContract::CounterContract::CounterChanged",
+          name: "contracts::counter::CounterContract::CounterChanged",
           kind: "struct",
           members: [
             {
@@ -167,7 +167,7 @@ const deployedContracts = {
             },
             {
               name: "reason",
-              type: "contracts::YourContract::CounterContract::ChangeReason",
+              type: "contracts::counter::CounterContract::ChangeReason",
               kind: "data",
             },
           ],
@@ -225,12 +225,12 @@ const deployedContracts = {
         },
         {
           type: "event",
-          name: "contracts::YourContract::CounterContract::Event",
+          name: "contracts::counter::CounterContract::Event",
           kind: "enum",
           variants: [
             {
-              name: "CounterChange",
-              type: "contracts::YourContract::CounterContract::CounterChanged",
+              name: "CounterChanged",
+              type: "contracts::counter::CounterContract::CounterChanged",
               kind: "nested",
             },
             {
@@ -242,7 +242,7 @@ const deployedContracts = {
         },
       ],
       classHash:
-        "0x6877bed82afc468c1bc9f329bac70c5036f292bef41fc168e1466b4fb7ad13",
+        "0x3a7b289d75ca15d41447e99ee595103f91eec01b4b4e508a8798178bc8cdbfa",
     },
   },
 } as const;

@@ -34,7 +34,7 @@ pub mod CounterContract {
     #[event]
     #[derive(Drop, starknet::Event)]
     pub enum Event {
-        CounterChange: CounterChanged,
+        CounterChanged: CounterChanged,
         #[flat]
         OwnableEvent: OwnableComponent::Event,
     }
